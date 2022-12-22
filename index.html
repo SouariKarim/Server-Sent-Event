@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=dd, initial-scale=1.0">
+  <link rel="stylesheet" href="./style.css">
+  <title>SSE</title>
+</head>
+<body>
+  <div class="container">
+    <div class="channel" id="aaa">
+      <div class="name">AAA</div>
+      <div class="subscribers">0</div>
+      <button onclick="subscribe('aaa')" >Subscribe</button>
+    </div>
+    <div class="channel" id="bbb">
+      <div class="name">BBB</div>
+      <div class="subscribers">0</div>
+      <button onclick="subscribe('bbb')" >Subscribe</button>
+    </div>
+    <div class="channel" id="ccc">
+      <div class="name">CCC</div>
+      <div class="subscribers">0</div>
+      <button onclick="subscribe('ccc')" >Subscribe</button>
+    </div>
+    <div class="channel" id="ddd">
+      <div class="name">DDD</div>
+      <div class="subscribers">0</div>
+      <button onclick="subscribe('ddd')" >Subscribe</button>
+    </div>
+  </div>
+  
+  <script>
+    // initiate the event source to open the channel between the server and the client and to keep listening to the server event
+    // a client can open only one channel with the server
+    const eventSource = new EventSource('http://localhost/sse')
+    eventSource.addEventListener('message' , (event)=> {
+      try {
+        // parse the data
+        const data = JSON.parse(event.data)
+        for (companie in data) {
+          document.querySelector(`#${companie} .subscribers`).innerHTML = data[companie].subs
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    })
+
+    const subscribe = async (str) => {
+      try {
+        // send data to the server
+        const response = await fetch(`http://localhost/subscribe/${str}` , {
+        method : "POST",
+        headers : {
+          "Accept" : "application/json",
+          "Content-Type": 'application/json'
+        },
+        body : JSON.stringify({name : "karim" , age: 32})
+      })
+      const result = await response.json()
+      console.log({result})
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  </script>
+  
+</body>
+</html>
